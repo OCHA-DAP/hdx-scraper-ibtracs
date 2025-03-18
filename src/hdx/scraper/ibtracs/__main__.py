@@ -93,7 +93,7 @@ def main(
 if __name__ == "__main__":
     facade(
         main,
-        hdx_url="https://stage.data-humdata-org.ahconu.org/dataset/ibtracs-global-tropical-storm-tracks",
+        hdx_site="stage",
         user_agent_config_yaml=join(expanduser("~"), ".useragents.yaml"),
         user_agent_lookup=_USER_AGENT_LOOKUP,
         project_config_yaml=join(
