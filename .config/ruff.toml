@@ -10,5 +10,5 @@ select = [
 ]
 
 [lint.isort]
-known-local-folder = ["hdx.scraper.simland"]
+known-local-folder = ["hdx.scraper.ibtracs"]
 known-third-party = ["hdx.api", "hdx.location", "hdx.data", "hdx.database", "hdx.facades", "hdx.scraper", "hdx.utilities"]
