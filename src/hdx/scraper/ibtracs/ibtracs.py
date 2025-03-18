@@ -129,7 +129,7 @@ class Ibtracs:
             encoding="utf-8",
         )
         dataset.generate_quickcharts(resource=dataset.get_resource(1),
-                                     path="hdx/scraper/ibtracs/config/hdx_resource_view_static.yml")
+                                     path="src/hdx/scraper/ibtracs/config/hdx_resource_view_static.yml")
 
         return dataset
 
