@@ -1,0 +1,12 @@
+# Collector specific configuration
+url: "https://www.ncei.noaa.gov/data/international-best-track-archive-for-climate-stewardship-ibtracs/v04r01/access/csv/ibtracs.ALL.list.v04r01.csv"
+dataset_names:
+  IBTRACS: "ibtracs-global-tropical-storm-tracks"
+dataset_title: "IBTrACS: Global Storm Tracks"
+columns_subset: ["SID","ISO_TIME", "BASIN", "SUBBASIN", "NATURE", "NUMBER", "LAT", "LON", "WMO_WIND", "WMO_PRES"]
+qc_indicators:
+  - code: 'IBTRACS_000001'
+    title: "Number of storms per year"
+    unit: "Years"
+    description: "Count of storms per year"
+    aggregate_col: "#region_name"
