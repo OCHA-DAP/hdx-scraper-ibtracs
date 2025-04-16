@@ -14,7 +14,9 @@ logger = logging.getLogger(__name__)
 
 
 class Ibtracs:
-    def __init__(self, configuration: Configuration, retriever: Retrieve, temp_dir: str):
+    def __init__(
+        self, configuration: Configuration, retriever: Retrieve, temp_dir: str
+    ):
         self._configuration = configuration
         self._retriever = retriever
         self._temp_dir = temp_dir
@@ -128,8 +130,10 @@ class Ibtracs:
             },
             encoding="utf-8",
         )
-        dataset.generate_quickcharts(resource=dataset.get_resource(1),
-                                     path="src/hdx/scraper/ibtracs/config/hdx_resource_view_static.yml")
+        dataset.generate_quickcharts(
+            resource=dataset.get_resource(1),
+            path="src/hdx/scraper/ibtracs/config/hdx_resource_view_static.yaml",
+        )
 
         return dataset
 
