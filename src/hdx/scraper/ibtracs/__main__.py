@@ -9,16 +9,13 @@ import logging
 from os.path import dirname, expanduser, join
 
 from hdx.api.configuration import Configuration
-from hdx.data.hdxobject import HDXError
 from hdx.data.user import User
 from hdx.facades.infer_arguments import facade
 from hdx.utilities.downloader import Download
-from hdx.utilities.path import (
-    wheretostart_tempdir_batch,
-)
+from hdx.utilities.path import temp_dir_batch
 from hdx.utilities.retriever import Retrieve
 
-from src.hdx.scraper.ibtracs.ibtracs import Ibtracs
+from hdx.scraper.ibtracs.ibtracs import Ibtracs
 
 logger = logging.getLogger(__name__)
 
@@ -44,7 +41,7 @@ def main(
     if not User.check_current_user_organization_access("hdx", "create_dataset"):
         raise PermissionError("API Token does not give access to HDX organisation!")
 
-    with wheretostart_tempdir_batch(folder=_USER_AGENT_LOOKUP) as info:
+    with temp_dir_batch(folder=_USER_AGENT_LOOKUP) as info:
         temp_dir = info["folder"]
         with Download() as downloader:
             retriever = Retrieve(
@@ -55,37 +52,37 @@ def main(
                 save=save,
                 use_saved=use_saved,
             )
-            folder = info["folder"]
-            configuration = Configuration.read()
-            ibtracs = Ibtracs(configuration, retriever, folder)
+            ibtracs = Ibtracs(configuration, retriever, temp_dir)
             ibtracs_csv = ibtracs.get_data()
             dataset = ibtracs.generate_dataset(ibtracs_csv)
-            logger.info("Number of datasets to upload: 1")
-
-            if dataset:
-                dataset.update_from_yaml(
-                    path=join(
-                        dirname(__file__),
-                        "config",
-                        "hdx_dataset_static.yaml",
-                    )
+            dataset.update_from_yaml(
+                path=join(
+                    dirname(__file__),
+                    "config",
+                    "hdx_dataset_static.yaml",
                 )
-                dataset["notes"] = dataset["notes"].replace(
-                    "\n", "  \n"
-                )  # ensure markdown has line breaks
-                try:
-                    dataset.create_in_hdx(
-                        remove_additional_resources=True,
-                        hxl_update=False,
-                        updated_by_script=_UPDATED_BY_SCRIPT,
-                        batch=info["batch"],
-                        ignore_fields=[
-                            "resource:description",
-                            "extras",
-                        ],
-                    )
-                except HDXError as e:
-                    logger.error(f"Could not upload: {e}")
+            )
+            dataset["notes"] = dataset["notes"].replace(
+                "\n", "  \n"
+            )  # ensure markdown has line breaks
+            dataset.generate_quickcharts(
+                resource=1,
+                path=join(
+                    dirname(__file__),
+                    "config",
+                    "hdx_resource_view_static.yaml",
+                ),
+            )
+            dataset.create_in_hdx(
+                remove_additional_resources=True,
+                hxl_update=False,
+                updated_by_script=_UPDATED_BY_SCRIPT,
+                batch=info["batch"],
+                ignore_fields=[
+                    "resource:description",
+                    "extras",
+                ],
+            )
 
 
 if __name__ == "__main__":

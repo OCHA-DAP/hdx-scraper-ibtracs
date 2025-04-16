@@ -19,3 +19,4 @@ LAT: Mean position - latitude (a combination of the available positions) \n
 LON: Mean position - longitude (a combination of the available positions) \n
 WMO_WIND: Maximum sustained wind speed assigned by the responsible WMO agency \n
 WMO_PRES: Minimum central pressure assigned by the responsible WMO agency."
+subnational: "0"

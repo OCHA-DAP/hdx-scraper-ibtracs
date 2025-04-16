@@ -4,11 +4,11 @@
 import logging
 from typing import Optional
 
-import pandas as pd
 from hdx.api.configuration import Configuration
 from hdx.data.dataset import Dataset
 from hdx.utilities.base_downloader import DownloadError
 from hdx.utilities.retriever import Retrieve
+from pandas import read_csv
 
 logger = logging.getLogger(__name__)
 
@@ -20,62 +20,31 @@ class Ibtracs:
         self._configuration = configuration
         self._retriever = retriever
         self._temp_dir = temp_dir
-        self.nature_mapping = {
-            "DS": "Disturbance",
-            "TS": "Tropical",
-            "ET": "Extratropical",
-            "SS": "Subtropical",
-            "NR": "Not reported",
-            "MX": "Mixture(contradicting report from different agencies)",
-        }
-        self.basin_mapping = {
-            "NA": "North Atlantic",
-            "SA": "South Atlantic",
-            "EP": "Eastern North Pacific",
-            "WP": "Western North Pacific",
-            "SP": "South Pacific",
-            "SI": "South Indian",
-            "NI": "North India",
-        }
-        self.subbasin_mapping = {
-            "MM": "Missing",
-            "NA": "North Atlantic",
-            "WA": "Western Australia",
-            "EA": "Eastern Australia",
-            "AS": "Arabian Sea",
-            "BB": "Bay of Bengal",
-            "CP": "Central Pacific",
-            "CS": "Caribbean Sea",
-            "GM": "Gulf of Mexico",
-        }
 
     def generate_dataset(self, csv_file) -> Optional[Dataset]:
-        dataset_tags = ["cyclones-hurricanes-typhoons"]
-
-        # Dataset info
         dataset = Dataset(
             {
-                "name": self._configuration["dataset_names"]["IBTRACS"],
-                "title": self._configuration["dataset_title"],
+                "name": self._configuration["dataset_names"]["global"],
+                "title": self._configuration["dataset_titles"]["global"],
             }
         )
+        dataset.add_tags(self._configuration["tags"])
+        dataset.add_other_location("world")
 
-        dataset.add_tags(dataset_tags)
-        # Only if needed
-        dataset.set_subnational(False)
-        dataset.add_other_location("World")
-
-        headers_subset = self._configuration["columns_subset"]
-        ibtracs_df = pd.read_csv(
+        ibtracs_df = read_csv(
             csv_file,
             sep=",",
             keep_default_na=False,
-            usecols=headers_subset,
+            usecols=self._configuration["columns_subset"],
             low_memory=False,
         )
-        ibtracs_df = ibtracs_df.replace({"NATURE": self.nature_mapping})
-        ibtracs_df = ibtracs_df.replace({"BASIN": self.basin_mapping})
-        ibtracs_df = ibtracs_df.replace({"SUBBASIN": self.subbasin_mapping})
+        ibtracs_df = ibtracs_df.replace(
+            {"NATURE": self._configuration["nature_mapping"]}
+        )
+        ibtracs_df = ibtracs_df.replace({"BASIN": self._configuration["basin_mapping"]})
+        ibtracs_df = ibtracs_df.replace(
+            {"SUBBASIN": self._configuration["subbasin_mapping"]}
+        )
 
         ibtracs_df_dict = ibtracs_df.apply(lambda x: x.to_dict(), axis=1)
 
@@ -130,20 +99,13 @@ class Ibtracs:
             },
             encoding="utf-8",
         )
-        dataset.generate_quickcharts(
-            resource=dataset.get_resource(1),
-            path="src/hdx/scraper/ibtracs/config/hdx_resource_view_static.yaml",
-        )
-
         return dataset
 
-    def get_data(self):
+    def get_data(self) -> Optional[str]:
         try:
             csv_file = self._retriever.download_file(self._configuration.get("url"))
-            logger.info("Finished downloading data!")
             return csv_file
-
         except DownloadError:
             logger.error(f"Couldn't download {self._configuration.get('url')}")
 
-        return None, None
+        return None
