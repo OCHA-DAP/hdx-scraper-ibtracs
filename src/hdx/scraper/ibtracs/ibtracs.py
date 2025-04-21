@@ -2,7 +2,7 @@
 """ibtracs scraper"""
 
 import logging
-from typing import Optional
+from typing import List, Optional
 
 from hdx.api.configuration import Configuration
 from hdx.data.dataset import Dataset
@@ -20,54 +20,49 @@ class Ibtracs:
         self._configuration = configuration
         self._retriever = retriever
         self._temp_dir = temp_dir
+        self.data = {}
 
-    def generate_dataset(self, csv_file) -> Optional[Dataset]:
+    def generate_dataset(self, countryiso3: str) -> Optional[Dataset]:
+        dataset_name = self._configuration["dataset_names"][countryiso3]
+        dataset_title = self._configuration["dataset_titles"][countryiso3]
+        if countryiso3 != "world":
+            dataset_name = dataset_name.format(iso=countryiso3)
+            dataset_title = dataset_title.format(iso=countryiso3)
         dataset = Dataset(
             {
-                "name": self._configuration["dataset_names"]["global"],
-                "title": self._configuration["dataset_titles"]["global"],
+                "name": dataset_name,
+                "title": dataset_title,
             }
         )
         dataset.add_tags(self._configuration["tags"])
-        dataset.add_other_location("world")
-
-        ibtracs_df = read_csv(
-            csv_file,
-            sep=",",
-            keep_default_na=False,
-            usecols=self._configuration["columns_subset"],
-            low_memory=False,
-        )
-        ibtracs_df = ibtracs_df.replace(
-            {"NATURE": self._configuration["nature_mapping"]}
-        )
-        ibtracs_df = ibtracs_df.replace({"BASIN": self._configuration["basin_mapping"]})
-        ibtracs_df = ibtracs_df.replace(
-            {"SUBBASIN": self._configuration["subbasin_mapping"]}
-        )
-
-        ibtracs_df_dict = ibtracs_df.apply(lambda x: x.to_dict(), axis=1)
-
+        if countryiso3 == "world":
+            dataset.add_other_location("world")
+        else:
+            dataset.add_country_location(countryiso3)
+        ibtracs_df = self.data[countryiso3]
+        ibtracs_dict = ibtracs_df.apply(lambda x: x.to_dict(), axis=1)
+        start_date = min(ibtracs_df["ISO_TIME"][1:])
+        start_year = start_date.year
         dataset.set_time_period(
-            startdate=min(
-                ibtracs_df["ISO_TIME"][1:],
-            ),
-            enddate=max(
-                ibtracs_df["ISO_TIME"][1:],
-            ),
+            startdate=start_date,
+            enddate=max(ibtracs_df["ISO_TIME"][1:]),
         )
         logger.info(
             f"Generating dataset {dataset.get_name_or_id()} from {len(ibtracs_df)} rows."
         )
 
+        if countryiso3 == "world":
+            resource_name = "ibtracs_ALL_list_v04r01.csv"
+        else:
+            resource_name = f"ibtracs_{countryiso3}_list_v04r01.csv"
         dataset.generate_resource_from_rows(
-            headers=list(ibtracs_df_dict[0].keys()),
-            rows=ibtracs_df_dict,
-            folder=self._retriever.temp_dir,
-            filename="ibtracs_ALL_list_v04r01.csv",
+            headers=list(ibtracs_dict[0].keys()),
+            rows=ibtracs_dict,
+            folder=self._temp_dir,
+            filename=resource_name,
             resourcedata={
-                "name": "ibtracs_ALL_list_v04r01.csv",
-                "description": "All IBTrACS storm tracks from 1845 to date.",
+                "name": resource_name,
+                "description": f"IBTrACS storm tracks from {start_year} to date.",
             },
             encoding="utf-8",
         )
@@ -90,22 +85,40 @@ class Ibtracs:
         dataset.generate_resource_from_rows(
             headers=list(qc_df_dict[0].keys()),
             rows=qc_df_dict,
-            folder=self._retriever.temp_dir,
+            folder=self._temp_dir,
             filename="data_for_quickcharts.csv",
             resourcedata={
                 "name": "data_for_quickcharts.csv",
-                "description": "Simplified quick charts data, without latitude or longitude, "
-                "with HXL tags from 1845 to date.",
+                "description": f"Simplified quick charts data, without latitude or longitude, "
+                f"with HXL tags from {start_year} to date.",
             },
             encoding="utf-8",
         )
         return dataset
 
-    def get_data(self) -> Optional[str]:
+    def get_data(self) -> None:
         try:
             csv_file = self._retriever.download_file(self._configuration.get("url"))
-            return csv_file
         except DownloadError:
             logger.error(f"Couldn't download {self._configuration.get('url')}")
+            return
 
-        return None
+        ibtracs_df = read_csv(
+            csv_file,
+            sep=",",
+            keep_default_na=False,
+            usecols=self._configuration["columns_subset"],
+            low_memory=False,
+        )
+        ibtracs_df = ibtracs_df.replace(
+            {"NATURE": self._configuration["nature_mapping"]}
+        )
+        ibtracs_df = ibtracs_df.replace({"BASIN": self._configuration["basin_mapping"]})
+        ibtracs_df = ibtracs_df.replace(
+            {"SUBBASIN": self._configuration["subbasin_mapping"]}
+        )
+        self.data["world"] = ibtracs_df
+        return
+
+    def process_countries(self) -> List[str]:
+        return ["world"]

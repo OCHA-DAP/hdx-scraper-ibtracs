@@ -2,11 +2,11 @@
 url: "https://www.ncei.noaa.gov/data/international-best-track-archive-for-climate-stewardship-ibtracs/v04r01/access/csv/ibtracs.ALL.list.v04r01.csv"
 
 dataset_names:
-  global: "ibtracs-global-tropical-storm-tracks"
+  world: "ibtracs-global-tropical-storm-tracks"
   country: "{iso}-ibtracs-tropical-storm-tracks"
 
 dataset_titles:
-  global: "IBTrACS: Global Storm Tracks"
+  world: "IBTrACS: Global Storm Tracks"
   country: "{country}: IBTrACS Storm Tracks"
 
 columns_subset:
@@ -51,3 +51,4 @@ subbasin_mapping:
 
 tags:
   - "cyclones-hurricanes-typhoons"
+  - "hxl"

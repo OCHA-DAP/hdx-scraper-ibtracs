@@ -53,36 +53,38 @@ def main(
                 use_saved=use_saved,
             )
             ibtracs = Ibtracs(configuration, retriever, temp_dir)
-            ibtracs_csv = ibtracs.get_data()
-            dataset = ibtracs.generate_dataset(ibtracs_csv)
-            dataset.update_from_yaml(
-                path=join(
-                    dirname(__file__),
-                    "config",
-                    "hdx_dataset_static.yaml",
+            ibtracs.get_data()
+            countryiso3s = ibtracs.process_countries()
+            for countryiso3 in countryiso3s:
+                dataset = ibtracs.generate_dataset(countryiso3)
+                dataset.update_from_yaml(
+                    path=join(
+                        dirname(__file__),
+                        "config",
+                        "hdx_dataset_static.yaml",
+                    )
                 )
-            )
-            dataset["notes"] = dataset["notes"].replace(
-                "\n", "  \n"
-            )  # ensure markdown has line breaks
-            dataset.generate_quickcharts(
-                resource=1,
-                path=join(
-                    dirname(__file__),
-                    "config",
-                    "hdx_resource_view_static.yaml",
-                ),
-            )
-            dataset.create_in_hdx(
-                remove_additional_resources=True,
-                hxl_update=False,
-                updated_by_script=_UPDATED_BY_SCRIPT,
-                batch=info["batch"],
-                ignore_fields=[
-                    "resource:description",
-                    "extras",
-                ],
-            )
+                dataset["notes"] = dataset["notes"].replace(
+                    "\n", "  \n"
+                )  # ensure markdown has line breaks
+                dataset.generate_quickcharts(
+                    resource=1,
+                    path=join(
+                        dirname(__file__),
+                        "config",
+                        "hdx_resource_view_static.yaml",
+                    ),
+                )
+                dataset.create_in_hdx(
+                    remove_additional_resources=True,
+                    hxl_update=False,
+                    updated_by_script=_UPDATED_BY_SCRIPT,
+                    batch=info["batch"],
+                    ignore_fields=[
+                        "resource:description",
+                        "extras",
+                    ],
+                )
 
 
 if __name__ == "__main__":
