@@ -7,6 +7,7 @@ from typing import List, Optional
 from hdx.api.configuration import Configuration
 from hdx.data.dataset import Dataset
 from hdx.utilities.base_downloader import DownloadError
+from hdx.utilities.dateparse import parse_date
 from hdx.utilities.retriever import Retrieve
 from pandas import read_csv
 
@@ -41,11 +42,12 @@ class Ibtracs:
             dataset.add_country_location(countryiso3)
         ibtracs_df = self.data[countryiso3]
         ibtracs_dict = ibtracs_df.apply(lambda x: x.to_dict(), axis=1)
-        start_date = min(ibtracs_df["ISO_TIME"][1:])
-        start_year = start_date.year
+        dates = list(set(ibtracs_df["ISO_TIME"][1:]))
+        dates = [parse_date(d) for d in dates]
+        start_year = min(dates).year
         dataset.set_time_period(
-            startdate=start_date,
-            enddate=max(ibtracs_df["ISO_TIME"][1:]),
+            startdate=min(dates),
+            enddate=max(dates),
         )
         logger.info(
             f"Generating dataset {dataset.get_name_or_id()} from {len(ibtracs_df)} rows."
