@@ -12,6 +12,7 @@ build-backend = "hatchling.build"
 name = "hdx-scraper-ibtracs"
 requires-python = ">=3.12"
 dependencies = [
+  "geopandas",
   "hdx-python-api",
   "hdx-python-utilities",
   "pandas",

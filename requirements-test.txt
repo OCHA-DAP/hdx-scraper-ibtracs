@@ -14,6 +14,8 @@ attrs==25.3.0
 certifi==2025.1.31
     # via
     #   -c requirements.txt
+    #   pyogrio
+    #   pyproj
     #   requests
 chardet==5.2.0
     # via
@@ -62,6 +64,10 @@ frictionless==5.18.1
     # via
     #   -c requirements.txt
     #   hdx-python-utilities
+geopandas==1.0.1
+    # via
+    #   -c requirements.txt
+    #   hdx-scraper-ibtracs (pyproject.toml)
 hdx-python-api==6.3.8
     # via
     #   -c requirements.txt
@@ -149,7 +155,7 @@ mdurl==0.1.2
     # via
     #   -c requirements.txt
     #   markdown-it-py
-more-itertools==10.6.0
+more-itertools==10.7.0
     # via
     #   -c requirements.txt
     #   inflect
@@ -160,17 +166,25 @@ num2words==0.5.14
 numpy==2.2.5
     # via
     #   -c requirements.txt
+    #   geopandas
     #   pandas
+    #   pyogrio
+    #   shapely
 openpyxl==3.1.5
     # via
     #   -c requirements.txt
     #   hdx-python-utilities
 packaging==25.0
-    # via pytest
+    # via
+    #   -c requirements.txt
+    #   geopandas
+    #   pyogrio
+    #   pytest
 pandas==2.2.3
     # via
     #   -c requirements.txt
     #   hdx-scraper-ibtracs (pyproject.toml)
+    #   geopandas
 petl==1.7.16
     # via
     #   -c requirements.txt
@@ -198,10 +212,18 @@ pygments==2.19.1
     # via
     #   -c requirements.txt
     #   rich
+pyogrio==0.10.0
+    # via
+    #   -c requirements.txt
+    #   geopandas
 pyphonetics==0.5.3
     # via
     #   -c requirements.txt
     #   hdx-python-utilities
+pyproj==3.7.1
+    # via
+    #   -c requirements.txt
+    #   geopandas
 pytest==8.3.5
     # via
     #   hdx-scraper-ibtracs (pyproject.toml)
@@ -283,6 +305,10 @@ setuptools==79.0.0
     # via
     #   -c requirements.txt
     #   ckanapi
+shapely==2.1.0
+    # via
+    #   -c requirements.txt
+    #   geopandas
 shellingham==1.5.4
     # via
     #   -c requirements.txt

@@ -9,7 +9,9 @@ from hdx.scraper.ibtracs.ibtracs import Ibtracs
 
 
 class TestIbtracs:
-    def test_ibtracs(self, configuration, fixtures_dir, input_dir, config_dir):
+    def test_ibtracs(
+        self, configuration, read_dataset, fixtures_dir, input_dir, config_dir
+    ):
         with temp_dir(
             "Test_ibtracs",
             delete_on_success=True,
@@ -27,7 +29,7 @@ class TestIbtracs:
                 ibtracs = Ibtracs(configuration, retriever, tempdir)
                 ibtracs.get_data()
                 countryiso3s = ibtracs.process_countries()
-                assert countryiso3s == ["world"]
+                assert countryiso3s == ["world", "CUB", "JAM"]
                 dataset = ibtracs.generate_dataset("world")
                 dataset.update_from_yaml(
                     path=join(config_dir, "hdx_dataset_static.yaml")

@@ -1,6 +1,10 @@
 # Collector specific configuration
 url: "https://www.ncei.noaa.gov/data/international-best-track-archive-for-climate-stewardship-ibtracs/v04r01/access/csv/ibtracs.ALL.list.v04r01.csv"
 
+global_boundaries:
+  dataset: "unmap-international-boundaries-geojson"
+  resource: "wrl_polbnda_int_1m_uncs.geojson"
+
 dataset_names:
   world: "ibtracs-global-tropical-storm-tracks"
   country: "{iso}-ibtracs-tropical-storm-tracks"

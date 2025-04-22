@@ -3,6 +3,7 @@ from os.path import join
 import pytest
 from hdx.api.configuration import Configuration
 from hdx.api.locations import Locations
+from hdx.data.dataset import Dataset
 from hdx.data.vocabulary import Vocabulary
 from hdx.location.country import Country
 from hdx.utilities.useragent import UserAgent
@@ -23,6 +24,21 @@ def config_dir(fixtures_dir):
     return join("src", "hdx", "scraper", "ibtracs", "config")
 
 
+@pytest.fixture(scope="function")
+def read_dataset(monkeypatch):
+    def read_from_hdx(dataset_name):
+        return Dataset.load_from_json(
+            join(
+                "tests",
+                "fixtures",
+                "input",
+                f"dataset-{dataset_name}.json",
+            )
+        )
+
+    monkeypatch.setattr(Dataset, "read_from_hdx", staticmethod(read_from_hdx))
+
+
 @pytest.fixture(scope="session")
 def configuration(config_dir):
     UserAgent.set_global("test")
@@ -34,8 +50,8 @@ def configuration(config_dir):
     # Change locations below to match those needed in tests
     Locations.set_validlocations(
         [
-            {"name": "afg", "title": "Afghanistan"},
-            {"name": "sdn", "title": "Sudan"},
+            {"name": "cub", "title": "Cuba"},
+            {"name": "jam", "title": "Jamaica"},
             {"name": "world", "title": "World"},
         ]
     )

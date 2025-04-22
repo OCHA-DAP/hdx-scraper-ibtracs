@@ -9,7 +9,10 @@ attrs==25.3.0
     #   jsonschema
     #   referencing
 certifi==2025.1.31
-    # via requests
+    # via
+    #   pyogrio
+    #   pyproj
+    #   requests
 chardet==5.2.0
     # via frictionless
 charset-normalizer==3.4.1
@@ -34,6 +37,8 @@ et-xmlfile==2.0.0
     # via openpyxl
 frictionless==5.18.1
     # via hdx-python-utilities
+geopandas==1.0.1
+    # via hdx-scraper-ibtracs (pyproject.toml)
 hdx-python-api==6.3.8
     # via hdx-scraper-ibtracs (pyproject.toml)
 hdx-python-country==3.9.2
@@ -83,16 +88,26 @@ markupsafe==3.0.2
     # via jinja2
 mdurl==0.1.2
     # via markdown-it-py
-more-itertools==10.6.0
+more-itertools==10.7.0
     # via inflect
 num2words==0.5.14
     # via quantulum3
 numpy==2.2.5
-    # via pandas
+    # via
+    #   geopandas
+    #   pandas
+    #   pyogrio
+    #   shapely
 openpyxl==3.1.5
     # via hdx-python-utilities
+packaging==25.0
+    # via
+    #   geopandas
+    #   pyogrio
 pandas==2.2.3
-    # via hdx-scraper-ibtracs (pyproject.toml)
+    # via
+    #   hdx-scraper-ibtracs (pyproject.toml)
+    #   geopandas
 petl==1.7.16
     # via frictionless
 ply==3.11
@@ -107,8 +122,12 @@ pydantic-core==2.33.1
     # via pydantic
 pygments==2.19.1
     # via rich
+pyogrio==0.10.0
+    # via geopandas
 pyphonetics==0.5.3
     # via hdx-python-utilities
+pyproj==3.7.1
+    # via geopandas
 python-dateutil==2.9.0.post0
     # via
     #   frictionless
@@ -158,6 +177,8 @@ ruamel-yaml-clib==0.2.12
     # via ruamel-yaml
 setuptools==79.0.0
     # via ckanapi
+shapely==2.1.0
+    # via geopandas
 shellingham==1.5.4
     # via typer
 simpleeval==1.0.3

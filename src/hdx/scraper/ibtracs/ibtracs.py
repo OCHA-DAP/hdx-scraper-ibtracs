@@ -4,12 +4,15 @@
 import logging
 from typing import List, Optional
 
+import geopandas
 from hdx.api.configuration import Configuration
 from hdx.data.dataset import Dataset
+from hdx.location.country import Country
 from hdx.utilities.base_downloader import DownloadError
 from hdx.utilities.dateparse import parse_date
 from hdx.utilities.retriever import Retrieve
-from pandas import read_csv
+from pandas import concat, read_csv
+from shapely.validation import make_valid
 
 logger = logging.getLogger(__name__)
 
@@ -24,11 +27,15 @@ class Ibtracs:
         self.data = {}
 
     def generate_dataset(self, countryiso3: str) -> Optional[Dataset]:
-        dataset_name = self._configuration["dataset_names"][countryiso3]
-        dataset_title = self._configuration["dataset_titles"][countryiso3]
-        if countryiso3 != "world":
-            dataset_name = dataset_name.format(iso=countryiso3)
-            dataset_title = dataset_title.format(iso=countryiso3)
+        if countryiso3 == "world":
+            dataset_name = self._configuration["dataset_names"][countryiso3]
+            dataset_title = self._configuration["dataset_titles"][countryiso3]
+        else:
+            country_name = Country.get_country_name_from_iso3(countryiso3)
+            dataset_name = self._configuration["dataset_names"]["country"]
+            dataset_title = self._configuration["dataset_titles"]["country"]
+            dataset_name = dataset_name.format(iso=countryiso3.lower())
+            dataset_title = dataset_title.format(country=country_name)
         dataset = Dataset(
             {
                 "name": dataset_name,
@@ -123,4 +130,59 @@ class Ibtracs:
         return
 
     def process_countries(self) -> List[str]:
-        return ["world"]
+        logger.info("Downloading global boundary")
+        global_boundary = self.download_global_boundary()
+        global_data = self.data["world"][1:]
+        geo_df = geopandas.GeoDataFrame(
+            global_data,
+            geometry=geopandas.points_from_xy(global_data.LON, global_data.LAT),
+            crs="EPSG:4326",
+        )
+        geo_df = geo_df.to_crs(crs="ESRI:54009")
+
+        logger.info("Processing countries")
+        for iso3 in global_boundary["ISO_3"]:
+            if iso3[0] == "X":
+                continue
+            country_lyr = global_boundary[global_boundary["ISO_3"] == iso3]
+            country_lyr.loc[:, "geometry"] = country_lyr.geometry.buffer(
+                distance=2000000
+            )
+            joined_lyr = geopandas.overlay(geo_df, country_lyr, how="intersection")
+            if len(joined_lyr) == 0:
+                continue
+            sid_list = joined_lyr["SID"].unique()
+            country_data = self.data["world"][self.data["world"]["SID"].isin(sid_list)]
+            country_data = concat([self.data["world"][0:1], country_data])
+            self.data[iso3] = country_data
+
+        return list(self.data.keys())
+
+    def download_global_boundary(self):
+        dataset_info = self._configuration["global_boundaries"]
+        dataset = Dataset.read_from_hdx(dataset_info["dataset"])
+        resource = [
+            r for r in dataset.get_resources() if r["name"] == dataset_info["resource"]
+        ][0]
+        if self._retriever.use_saved:
+            file_path = self._retriever.download_file(
+                resource["url"], filename=resource["name"]
+            )
+        else:
+            folder = (
+                self._retriever.saved_dir if self._retriever.save else self._temp_dir
+            )
+            _, file_path = resource.download(folder)
+        lyr = geopandas.read_file(file_path)
+        lyr = lyr.to_crs(crs="ESRI:54009")
+        for i, row in lyr.iterrows():
+            if not lyr.geometry[i].is_valid:
+                lyr.loc[i, "geometry"] = make_valid(lyr.geometry[i])
+            if row["STATUS"] and row["STATUS"][:4] == "Adm.":
+                lyr.loc[i, "ISO_3"] = row["Color_Code"]
+        lyr = lyr.dissolve(by="ISO_3", as_index=False)
+        lyr = lyr.drop(
+            [f for f in lyr.columns if f.lower() not in ["iso_3", "geometry"]],
+            axis=1,
+        )
+        return lyr
