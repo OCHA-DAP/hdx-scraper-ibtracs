@@ -57,6 +57,8 @@ def main(
             countryiso3s = ibtracs.process_countries()
             for countryiso3 in countryiso3s:
                 dataset = ibtracs.generate_dataset(countryiso3)
+                if not dataset:
+                    continue
                 dataset.update_from_yaml(
                     path=join(
                         dirname(__file__),

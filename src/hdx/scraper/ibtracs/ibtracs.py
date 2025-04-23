@@ -7,6 +7,7 @@ from typing import List, Optional
 import geopandas
 from hdx.api.configuration import Configuration
 from hdx.data.dataset import Dataset
+from hdx.data.hdxobject import HDXError
 from hdx.location.country import Country
 from hdx.utilities.base_downloader import DownloadError
 from hdx.utilities.dateparse import parse_date
@@ -46,7 +47,11 @@ class Ibtracs:
         if countryiso3 == "world":
             dataset.add_other_location("world")
         else:
-            dataset.add_country_location(countryiso3)
+            try:
+                dataset.add_country_location(countryiso3)
+            except HDXError:
+                logger.error(f"Couldn't find country {countryiso3}, skipping")
+                return None
         ibtracs_df = self.data[countryiso3]
         ibtracs_dict = ibtracs_df.apply(lambda x: x.to_dict(), axis=1)
         dates = list(set(ibtracs_df["ISO_TIME"][1:]))
@@ -140,10 +145,10 @@ class Ibtracs:
         )
         geo_df = geo_df.to_crs(crs="ESRI:54009")
 
-        logger.info("Processing countries")
         for iso3 in global_boundary["ISO_3"]:
-            if iso3[0] == "X":
+            if iso3[0] == "X" or iso3 in ["ATA", "CAN", "RUS", "USA"]:
                 continue
+            logger.info(f"Processing {iso3}")
             country_lyr = global_boundary[global_boundary["ISO_3"] == iso3]
             country_lyr.loc[:, "geometry"] = country_lyr.geometry.buffer(
                 distance=2000000
