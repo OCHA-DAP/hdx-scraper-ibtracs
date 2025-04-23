@@ -70,7 +70,7 @@ jsonschema==4.23.0
     # via
     #   frictionless
     #   tableschema-to-template
-jsonschema-specifications==2024.10.1
+jsonschema-specifications==2025.4.1
     # via jsonschema
 libhxl==5.2.2
     # via
