@@ -145,14 +145,16 @@ class Ibtracs:
         )
         geo_df = geo_df.to_crs(crs="ESRI:54009")
 
-        for iso3 in global_boundary["ISO_3"]:
-            if iso3[0] == "X" or iso3 in ["ATA", "CAN", "RUS", "USA"]:
+        for iso3 in global_boundary["ISO_3"].unique():
+            if not iso3 or iso3[0] == "X" or iso3 in ["ATA", "CAN", "RUS", "USA"]:
                 continue
             logger.info(f"Processing {iso3}")
             country_lyr = global_boundary[global_boundary["ISO_3"] == iso3]
             country_lyr.loc[:, "geometry"] = country_lyr.geometry.buffer(
                 distance=2000000
             )
+            country_lyr = country_lyr.dissolve()
+            country_lyr = country_lyr.explode()
             joined_lyr = geopandas.overlay(geo_df, country_lyr, how="intersection")
             if len(joined_lyr) == 0:
                 continue
@@ -185,7 +187,6 @@ class Ibtracs:
                 lyr.loc[i, "geometry"] = make_valid(lyr.geometry[i])
             if row["STATUS"] and row["STATUS"][:4] == "Adm.":
                 lyr.loc[i, "ISO_3"] = row["Color_Code"]
-        lyr = lyr.dissolve(by="ISO_3", as_index=False)
         lyr = lyr.drop(
             [f for f in lyr.columns if f.lower() not in ["iso_3", "geometry"]],
             axis=1,
