@@ -1,5 +1,7 @@
 # Collector specific configuration
-url: "https://www.ncei.noaa.gov/data/international-best-track-archive-for-climate-stewardship-ibtracs/v04r01/access/csv/ibtracs.ALL.list.v04r01.csv"
+base_url: "https://www.ncei.noaa.gov/data/international-best-track-archive-for-climate-stewardship-ibtracs/"
+csv: "{version}/access/csv/ibtracs.ALL.list.{version}.csv"
+lines: "{version}/access/shapefile/IBTrACS.ALL.list.{version}.lines.zip"
 
 global_boundaries:
   dataset: "unmap-international-boundaries-geojson"

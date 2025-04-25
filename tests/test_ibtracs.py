@@ -63,7 +63,7 @@ class TestIbtracs:
                 }
 
                 resources = dataset.get_resources()
-                assert len(resources) == 2
+                assert len(resources) == 3
                 assert resources[0] == {
                     "name": "ibtracs_ALL_list_v04r01.csv",
                     "description": "IBTrACS storm tracks from 1842 to date.",
@@ -75,6 +75,10 @@ class TestIbtracs:
                 assert_files_same(
                     join(fixtures_dir, "ibtracs_ALL_list_v04r01.csv"),
                     join(tempdir, "ibtracs_ALL_list_v04r01.csv"),
+                )
+                assert_files_same(
+                    join(fixtures_dir, "ibtracs_ALL_list_v04r01_lines.geojson"),
+                    join(tempdir, "ibtracs_ALL_list_v04r01_lines.geojson"),
                 )
 
                 dataset = ibtracs.generate_dataset("CUB")
@@ -110,9 +114,9 @@ class TestIbtracs:
                 }
 
                 resources = dataset.get_resources()
-                assert len(resources) == 2
+                assert len(resources) == 3
                 assert resources[0] == {
-                    "name": "ibtracs_CUB_list_v04r01.csv",
+                    "name": "ibtracs_ALL_list_v04r01_CUB.csv",
                     "description": "IBTrACS storm tracks from 1853 to date.",
                     "format": "csv",
                     "resource_type": "file.upload",
@@ -120,6 +124,10 @@ class TestIbtracs:
                 }
 
                 assert_files_same(
-                    join(fixtures_dir, "ibtracs_CUB_list_v04r01.csv"),
-                    join(tempdir, "ibtracs_CUB_list_v04r01.csv"),
+                    join(fixtures_dir, "ibtracs_ALL_list_v04r01_CUB.csv"),
+                    join(tempdir, "ibtracs_ALL_list_v04r01_CUB.csv"),
+                )
+                assert_files_same(
+                    join(fixtures_dir, "ibtracs_ALL_list_v04r01_lines_CUB.geojson"),
+                    join(tempdir, "ibtracs_ALL_list_v04r01_lines_CUB.geojson"),
                 )

@@ -2,15 +2,19 @@
 """ibtracs scraper"""
 
 import logging
+from os.path import join
 from typing import List, Optional
+from zipfile import ZipFile
 
 import geopandas
+from bs4 import BeautifulSoup
 from hdx.api.configuration import Configuration
 from hdx.data.dataset import Dataset
 from hdx.data.hdxobject import HDXError
+from hdx.data.resource import Resource
 from hdx.location.country import Country
-from hdx.utilities.base_downloader import DownloadError
 from hdx.utilities.dateparse import parse_date
+from hdx.utilities.dictandlist import dict_of_dicts_add
 from hdx.utilities.retriever import Retrieve
 from pandas import concat, read_csv
 from shapely.validation import make_valid
@@ -52,7 +56,7 @@ class Ibtracs:
             except HDXError:
                 logger.error(f"Couldn't find country {countryiso3}, skipping")
                 return None
-        ibtracs_df = self.data[countryiso3]
+        ibtracs_df = self.data[countryiso3]["csv"]
         ibtracs_dict = ibtracs_df.apply(lambda x: x.to_dict(), axis=1)
         dates = list(set(ibtracs_df["ISO_TIME"][1:]))
         dates = [parse_date(d) for d in dates]
@@ -65,10 +69,8 @@ class Ibtracs:
             f"Generating dataset {dataset.get_name_or_id()} from {len(ibtracs_df)} rows."
         )
 
-        if countryiso3 == "world":
-            resource_name = "ibtracs_ALL_list_v04r01.csv"
-        else:
-            resource_name = f"ibtracs_{countryiso3}_list_v04r01.csv"
+        loc_id = "" if countryiso3 == "world" else f"_{countryiso3}"
+        resource_name = f"ibtracs_ALL_list_v04r01{loc_id}.csv"
         dataset.generate_resource_from_rows(
             headers=list(ibtracs_dict[0].keys()),
             rows=ibtracs_dict,
@@ -80,6 +82,21 @@ class Ibtracs:
             },
             encoding="utf-8",
         )
+
+        # add geo resource
+        geo_df = self.data[countryiso3]["geo"]
+        resource_name = f"ibtracs_ALL_list_v04r01_lines{loc_id}.geojson"
+        geo_path = join(self._temp_dir, resource_name)
+        geo_df.to_file(geo_path, driver="GeoJSON")
+        resource = Resource(
+            {
+                "name": resource_name,
+                "description": f"IBTrACS storm tracks from {start_year} to date.",
+            }
+        )
+        resource.set_format("GeoJSON")
+        resource.set_file_to_upload(geo_path)
+        dataset.add_update_resource(resource)
 
         # Subset with HXL tags sid, basin, year, nature
         hxl_tags = [
@@ -111,11 +128,34 @@ class Ibtracs:
         return dataset
 
     def get_data(self) -> None:
-        try:
-            csv_file = self._retriever.download_file(self._configuration.get("url"))
-        except DownloadError:
-            logger.error(f"Couldn't download {self._configuration.get('url')}")
-            return
+        # find latest version
+        text = self._retriever.download_text(
+            self._configuration["base_url"], "ibtracs.txt"
+        )
+        soup = BeautifulSoup(text, "html.parser")
+        lines = soup.find_all("a")
+        versions = []
+        for line in lines:
+            version = line.get("href")
+            if version[0] == "v":
+                versions.append(version)
+        version = versions[-1].replace("/", "")
+        csv_url = f"{self._configuration['base_url']}{self._configuration['csv'].format(version=version)}"
+        csv_file = self._retriever.download_file(csv_url)
+        lines_url = f"{self._configuration['base_url']}{self._configuration['lines'].format(version=version)}"
+        lines_file = self._retriever.download_file(lines_url)
+        with ZipFile(lines_file, "r") as z:
+            z.extractall(self._temp_dir)
+        lines_shp = join(self._temp_dir, f"IBTrACS.ALL.list.{version}.lines.shp")
+        lines_df = geopandas.read_file(
+            lines_shp,
+            columns=self._configuration["columns_subset"],
+        )
+        lines_df = lines_df.replace({"NATURE": self._configuration["nature_mapping"]})
+        lines_df = lines_df.replace({"BASIN": self._configuration["basin_mapping"]})
+        lines_df = lines_df.replace(
+            {"SUBBASIN": self._configuration["subbasin_mapping"]}
+        )
 
         ibtracs_df = read_csv(
             csv_file,
@@ -131,13 +171,14 @@ class Ibtracs:
         ibtracs_df = ibtracs_df.replace(
             {"SUBBASIN": self._configuration["subbasin_mapping"]}
         )
-        self.data["world"] = ibtracs_df
+        dict_of_dicts_add(self.data, "world", "csv", ibtracs_df)
+        dict_of_dicts_add(self.data, "world", "geo", lines_df)
         return
 
     def process_countries(self) -> List[str]:
         logger.info("Downloading global boundary")
         global_boundary = self.download_global_boundary()
-        global_data = self.data["world"][1:]
+        global_data = self.data["world"]["csv"][1:]
         geo_df = geopandas.GeoDataFrame(
             global_data,
             geometry=geopandas.points_from_xy(global_data.LON, global_data.LAT),
@@ -159,9 +200,15 @@ class Ibtracs:
             if len(joined_lyr) == 0:
                 continue
             sid_list = joined_lyr["SID"].unique()
-            country_data = self.data["world"][self.data["world"]["SID"].isin(sid_list)]
-            country_data = concat([self.data["world"][0:1], country_data])
-            self.data[iso3] = country_data
+            country_data = self.data["world"]["csv"][
+                self.data["world"]["csv"]["SID"].isin(sid_list)
+            ]
+            country_data = concat([self.data["world"]["csv"][0:1], country_data])
+            geo_data = self.data["world"]["geo"][
+                self.data["world"]["geo"]["SID"].isin(sid_list)
+            ]
+            dict_of_dicts_add(self.data, iso3, "csv", country_data)
+            dict_of_dicts_add(self.data, iso3, "geo", geo_data)
 
         return list(self.data.keys())
 

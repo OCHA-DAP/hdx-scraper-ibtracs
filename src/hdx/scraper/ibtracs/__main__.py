@@ -70,7 +70,7 @@ def main(
                     "\n", "  \n"
                 )  # ensure markdown has line breaks
                 dataset.generate_quickcharts(
-                    resource=1,
+                    resource=2,
                     path=join(
                         dirname(__file__),
                         "config",
