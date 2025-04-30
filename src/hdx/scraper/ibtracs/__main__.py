@@ -69,16 +69,18 @@ def main(
                 dataset["notes"] = dataset["notes"].replace(
                     "\n", "  \n"
                 )  # ensure markdown has line breaks
-                dataset.generate_quickcharts(
-                    resource=2,
-                    path=join(
-                        dirname(__file__),
-                        "config",
-                        "hdx_resource_view_static.yaml",
-                    ),
-                )
+                if countryiso3 == "world":
+                    dataset.generate_quickcharts(
+                        resource=2,
+                        path=join(
+                            dirname(__file__),
+                            "config",
+                            "hdx_resource_view_static.yaml",
+                        ),
+                    )
                 dataset.create_in_hdx(
                     remove_additional_resources=True,
+                    match_resource_order=True,
                     hxl_update=False,
                     updated_by_script=_UPDATED_BY_SCRIPT,
                     batch=info["batch"],

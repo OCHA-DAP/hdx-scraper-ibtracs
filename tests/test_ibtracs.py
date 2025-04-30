@@ -101,6 +101,7 @@ class TestIbtracs:
                     ],
                     "groups": [{"name": "cub"}],
                     "dataset_date": "[1853-08-03T00:00:00 TO 2051-12-01T23:59:59]",
+                    "dataset_preview": "resource_id",
                     "license_id": "cc-by-igo",
                     "methodology": "Other",
                     "methodology_other": "Please find the methodology at [this link](https://www.ncei.noaa.gov/sites/g/files/anmtlf171/files/2024-07/IBTrACS_version4r01_Technical_Details.pdf)",
@@ -116,7 +117,7 @@ class TestIbtracs:
                 }
 
                 resources = dataset.get_resources()
-                assert len(resources) == 3
+                assert len(resources) == 2
                 assert resources[0] == {
                     "name": "ibtracs_ALL_list_v04r01_CUB.csv",
                     "description": "IBTrACS storm tracks from 1853 to date that pass within 2000 kilometers of Cuba.",

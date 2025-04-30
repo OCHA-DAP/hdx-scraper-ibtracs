@@ -102,34 +102,40 @@ class Ibtracs:
         resource.set_format("GeoJSON")
         resource.set_file_to_upload(geo_path)
         dataset.add_update_resource(resource)
+        if countryiso3 != "world":
+            resource.enable_dataset_preview()
+            dataset.preview_resource()
 
         # Subset with HXL tags sid, basin, year, nature
-        hxl_tags = [
-            "#id+code",
-            "#region+name",
-            "#region+name+subbasin",
-            "#impact+type",
-            "#date+year+reported",
-        ]
-        qc_df = ibtracs_df.loc[:, ["SID", "BASIN", "SUBBASIN", "ISO_TIME", "NATURE"]]
-        qc_df["YEAR"] = qc_df["ISO_TIME"].str[:4]
-        qc_df.drop(columns=["ISO_TIME"], inplace=True)
-        qc_df.loc[qc_df.index[0]] = hxl_tags
-        qc_df.drop_duplicates(inplace=True)
-        qc_df_dict = qc_df.apply(lambda x: x.to_dict(), axis=1)
+        if countryiso3 == "world":
+            hxl_tags = [
+                "#id+code",
+                "#region+name",
+                "#region+name+subbasin",
+                "#impact+type",
+                "#date+year+reported",
+            ]
+            qc_df = ibtracs_df.loc[
+                :, ["SID", "BASIN", "SUBBASIN", "ISO_TIME", "NATURE"]
+            ]
+            qc_df["YEAR"] = qc_df["ISO_TIME"].str[:4]
+            qc_df.drop(columns=["ISO_TIME"], inplace=True)
+            qc_df.loc[qc_df.index[0]] = hxl_tags
+            qc_df.drop_duplicates(inplace=True)
+            qc_df_dict = qc_df.apply(lambda x: x.to_dict(), axis=1)
 
-        dataset.generate_resource_from_rows(
-            headers=list(qc_df_dict[0].keys()),
-            rows=qc_df_dict,
-            folder=self._temp_dir,
-            filename="data_for_quickcharts.csv",
-            resourcedata={
-                "name": "data_for_quickcharts.csv",
-                "description": f"Simplified quick charts data, without latitude or longitude, "
-                f"with HXL tags from {start_year} to date.",
-            },
-            encoding="utf-8",
-        )
+            dataset.generate_resource_from_rows(
+                headers=list(qc_df_dict[0].keys()),
+                rows=qc_df_dict,
+                folder=self._temp_dir,
+                filename="data_for_quickcharts.csv",
+                resourcedata={
+                    "name": "data_for_quickcharts.csv",
+                    "description": f"Simplified quick charts data, without latitude or longitude, "
+                    f"with HXL tags from {start_year} to date.",
+                },
+                encoding="utf-8",
+            )
         return dataset
 
     def get_data(self) -> None:
