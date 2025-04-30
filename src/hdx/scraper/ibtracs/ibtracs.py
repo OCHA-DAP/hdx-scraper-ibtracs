@@ -69,8 +69,13 @@ class Ibtracs:
             f"Generating dataset {dataset.get_name_or_id()} from {len(ibtracs_df)} rows."
         )
 
-        loc_id = "" if countryiso3 == "world" else f"_{countryiso3}"
-        resource_name = f"ibtracs_ALL_list_v04r01{loc_id}.csv"
+        file_loc = "" if countryiso3 == "world" else f"_{countryiso3}"
+        desc_loc = (
+            ""
+            if countryiso3 == "world"
+            else f" that pass within 2000 kilometers of {country_name}"
+        )
+        resource_name = f"ibtracs_ALL_list_v04r01{file_loc}.csv"
         dataset.generate_resource_from_rows(
             headers=list(ibtracs_dict[0].keys()),
             rows=ibtracs_dict,
@@ -78,20 +83,20 @@ class Ibtracs:
             filename=resource_name,
             resourcedata={
                 "name": resource_name,
-                "description": f"IBTrACS storm tracks from {start_year} to date.",
+                "description": f"IBTrACS storm tracks from {start_year} to date{desc_loc}.",
             },
             encoding="utf-8",
         )
 
         # add geo resource
         geo_df = self.data[countryiso3]["geo"]
-        resource_name = f"ibtracs_ALL_list_v04r01_lines{loc_id}.geojson"
+        resource_name = f"ibtracs_ALL_list_v04r01_lines{file_loc}.geojson"
         geo_path = join(self._temp_dir, resource_name)
         geo_df.to_file(geo_path, driver="GeoJSON")
         resource = Resource(
             {
                 "name": resource_name,
-                "description": f"IBTrACS storm tracks from {start_year} to date.",
+                "description": f"IBTrACS storm tracks from {start_year} to date{desc_loc}.",
             }
         )
         resource.set_format("GeoJSON")

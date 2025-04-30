@@ -119,7 +119,7 @@ class TestIbtracs:
                 assert len(resources) == 3
                 assert resources[0] == {
                     "name": "ibtracs_ALL_list_v04r01_CUB.csv",
-                    "description": "IBTrACS storm tracks from 1853 to date.",
+                    "description": "IBTrACS storm tracks from 1853 to date that pass within 2000 kilometers of Cuba.",
                     "format": "csv",
                     "resource_type": "file.upload",
                     "url_type": "upload",
