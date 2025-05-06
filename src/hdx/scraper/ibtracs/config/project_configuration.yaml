@@ -1,12 +1,60 @@
 # Collector specific configuration
-url: "https://www.ncei.noaa.gov/data/international-best-track-archive-for-climate-stewardship-ibtracs/v04r01/access/csv/ibtracs.ALL.list.v04r01.csv"
+base_url: "https://www.ncei.noaa.gov/data/international-best-track-archive-for-climate-stewardship-ibtracs/"
+csv: "{version}/access/csv/ibtracs.ALL.list.{version}.csv"
+lines: "{version}/access/shapefile/IBTrACS.ALL.list.{version}.lines.zip"
+
+global_boundaries:
+  dataset: "unmap-international-boundaries-geojson"
+  resource: "wrl_polbnda_int_1m_uncs.geojson"
+
 dataset_names:
-  IBTRACS: "ibtracs-global-tropical-storm-tracks"
-dataset_title: "IBTrACS: Global Storm Tracks"
-columns_subset: ["SID","ISO_TIME", "BASIN", "SUBBASIN", "NATURE", "NUMBER", "LAT", "LON", "WMO_WIND", "WMO_PRES"]
-qc_indicators:
-  - code: 'IBTRACS_000001'
-    title: "Number of storms per year"
-    unit: "Years"
-    description: "Count of storms per year"
-    aggregate_col: "#region_name"
+  world: "ibtracs-global-tropical-storm-tracks"
+  country: "{iso}-ibtracs-tropical-storm-tracks"
+
+dataset_titles:
+  world: "IBTrACS: Global Storm Tracks"
+  country: "{country}: IBTrACS Storm Tracks"
+
+columns_subset:
+  - "SID"
+  - "ISO_TIME"
+  - "BASIN"
+  - "SUBBASIN"
+  - "NATURE"
+  - "NUMBER"
+  - "LAT"
+  - "LON"
+  - "WMO_WIND"
+  - "WMO_PRES"
+
+nature_mapping:
+  DS: "Disturbance"
+  TS: "Tropical"
+  ET: "Extratropical"
+  SS: "Subtropical"
+  NR: "Not reported"
+  MX: "Mixture(contradicting report from different agencies)"
+
+basin_mapping:
+  NA: "North Atlantic"
+  SA: "South Atlantic"
+  EP: "Eastern North Pacific"
+  WP: "Western North Pacific"
+  SP: "South Pacific"
+  SI: "South Indian"
+  NI: "North India"
+
+subbasin_mapping:
+  MM: "Missing"
+  NA: "North Atlantic"
+  WA: "Western Australia"
+  EA: "Eastern Australia"
+  AS: "Arabian Sea"
+  BB: "Bay of Bengal"
+  CP: "Central Pacific"
+  CS: "Caribbean Sea"
+  GM: "Gulf of Mexico"
+
+tags:
+  - "cyclones-hurricanes-typhoons"
+  - "hxl"

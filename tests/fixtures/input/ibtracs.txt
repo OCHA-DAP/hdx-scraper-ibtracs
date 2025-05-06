@@ -1,0 +1,17 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+ <head>
+  <title>Index of /data/international-best-track-archive-for-climate-stewardship-ibtracs</title>
+ </head>
+ <body>
+<h1>Index of /data/international-best-track-archive-for-climate-stewardship-ibtracs</h1>
+  <table>
+   <tr><th><a href="?C=N;O=D">Name</a></th><th><a href="?C=M;O=A">Last modified</a></th><th><a href="?C=S;O=A">Size</a></th><th><a href="?C=D;O=A">Description</a></th></tr>
+   <tr><th colspan="4"><hr></th></tr>
+<tr><td><a href="/data/">Parent Directory</a></td><td>&nbsp;</td><td align="right">  - </td><td>&nbsp;</td></tr>
+<tr><td><a href="v03r09/">v03r09/</a></td><td align="right">2019-07-23 16:19  </td><td align="right">  - </td><td>&nbsp;</td></tr>
+<tr><td><a href="v04r00/">v04r00/</a></td><td align="right">2020-09-29 16:26  </td><td align="right">  - </td><td>&nbsp;</td></tr>
+<tr><td><a href="v04r01/">v04r01/</a></td><td align="right">2025-04-18 08:54  </td><td align="right">  - </td><td>&nbsp;</td></tr>
+   <tr><th colspan="4"><hr></th></tr>
+</table>
+<script id="_fed_an_ua_tag" type="text/javascript" src="https://dap.digitalgov.gov/Universal-Federated-Analytics-Min.js?agency=DOC&subagency=NOAA"></script></body></html>
