@@ -19,12 +19,14 @@ certifi==2025.4.26
     #   requests
 chardet==5.2.0
     # via frictionless
-charset-normalizer==3.4.1
+charset-normalizer==3.4.2
     # via requests
 ckanapi==4.8
     # via hdx-python-api
 click==8.1.8
     # via typer
+cydifflib==1.2.0
+    # via hdx-python-utilities
 defopt==6.4.0
     # via hdx-python-api
 dnspython==2.7.0
@@ -47,7 +49,7 @@ hdx-python-api==6.3.8
     # via hdx-scraper-ibtracs (pyproject.toml)
 hdx-python-country==3.9.2
     # via hdx-python-api
-hdx-python-utilities==3.8.5
+hdx-python-utilities==3.8.6
     # via
     #   hdx-scraper-ibtracs (pyproject.toml)
     #   hdx-python-api
@@ -179,7 +181,7 @@ ruamel-yaml==0.18.10
     # via hdx-python-utilities
 ruamel-yaml-clib==0.2.12
     # via ruamel-yaml
-setuptools==80.0.1
+setuptools==80.3.1
     # via ckanapi
 shapely==2.1.0
     # via geopandas
@@ -235,7 +237,7 @@ urllib3==2.4.0
     # via
     #   libhxl
     #   requests
-validators==0.34.0
+validators==0.35.0
     # via frictionless
 wheel==0.45.1
     # via libhxl

@@ -2,6 +2,7 @@
 """ibtracs scraper"""
 
 import logging
+from datetime import date
 from os.path import join
 from typing import List, Optional
 from zipfile import ZipFile
@@ -50,21 +51,29 @@ class Ibtracs:
         dataset.add_tags(self._configuration["tags"])
         if countryiso3 == "world":
             dataset.add_other_location("world")
+            dataset.set_expected_update_frequency("7")
         else:
             try:
                 dataset.add_country_location(countryiso3)
             except HDXError:
                 logger.error(f"Couldn't find country {countryiso3}, skipping")
                 return None
+            dataset.set_expected_update_frequency("-2")
         ibtracs_df = self.data[countryiso3]["csv"]
         ibtracs_dict = ibtracs_df.apply(lambda x: x.to_dict(), axis=1)
         dates = list(set(ibtracs_df["ISO_TIME"][1:]))
         dates = [parse_date(d) for d in dates]
         start_year = min(dates).year
+        end_date = max(dates)
         dataset.set_time_period(
             startdate=min(dates),
-            enddate=max(dates),
+            enddate=end_date,
         )
+        if countryiso3 != "world":
+            updated = check_dataset_date(dataset_name, end_date)
+            if not updated:
+                logger.info(f"Data has not been updated for {countryiso3}")
+                return None
         logger.info(
             f"Generating dataset {dataset.get_name_or_id()} from {len(ibtracs_df)} rows."
         )
@@ -250,3 +259,13 @@ class Ibtracs:
             axis=1,
         )
         return lyr
+
+
+def check_dataset_date(dataset_name: str, end_date: date) -> bool:
+    dataset = Dataset.read_from_hdx(dataset_name)
+    if not dataset:
+        return True
+    dataset_date = dataset.get_time_period()["enddate"]
+    if end_date.date() > dataset_date.date():
+        return True
+    return False
