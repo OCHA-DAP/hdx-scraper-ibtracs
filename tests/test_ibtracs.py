@@ -58,7 +58,7 @@ class TestIbtracs:
                     "private": False,
                     "maintainer": "2f9fd160-2a16-49c0-89d6-0bc3230599bf",
                     "owner_org": "hdx",
-                    "data_update_frequency": 7,
+                    "data_update_frequency": "7",
                     "notes": "The International Best Track Archive for Climate Stewardship (IBTrACS) project is the most complete global collection of tropical cyclones available. It merges recent and historical tropical cyclone data from multiple agencies to create a unified, publicly available, best-track dataset that improves inter-agency comparisons. \n \n Fields available: \n SID: A unique storm identifier (SID) assigned by IBTrACS algorithm.\n ISO_TIME: Time of the observation in ISO format (YYYY-MM-DD hh:mm:ss) \n BASIN: Basin of the current storm position \n SUBBASIN: Sub-basin of the current storm position \n NATURE: Type of storm (a combination of the various types from the available sources) \n NUMBER: Number of the storm for the year (restarts at 1 for each year \n LAT: Mean position - latitude (a combination of the available positions) \n LON: Mean position - longitude (a combination of the available positions) \n WMO_WIND: Maximum sustained wind speed assigned by the responsible WMO agency \n WMO_PRES: Minimum central pressure assigned by the responsible WMO agency.",
                     "subnational": "0",
                 }
@@ -111,7 +111,7 @@ class TestIbtracs:
                     "private": False,
                     "maintainer": "2f9fd160-2a16-49c0-89d6-0bc3230599bf",
                     "owner_org": "hdx",
-                    "data_update_frequency": 7,
+                    "data_update_frequency": "-2",
                     "notes": "The International Best Track Archive for Climate Stewardship (IBTrACS) project is the most complete global collection of tropical cyclones available. It merges recent and historical tropical cyclone data from multiple agencies to create a unified, publicly available, best-track dataset that improves inter-agency comparisons. \n \n Fields available: \n SID: A unique storm identifier (SID) assigned by IBTrACS algorithm.\n ISO_TIME: Time of the observation in ISO format (YYYY-MM-DD hh:mm:ss) \n BASIN: Basin of the current storm position \n SUBBASIN: Sub-basin of the current storm position \n NATURE: Type of storm (a combination of the various types from the available sources) \n NUMBER: Number of the storm for the year (restarts at 1 for each year \n LAT: Mean position - latitude (a combination of the available positions) \n LON: Mean position - longitude (a combination of the available positions) \n WMO_WIND: Maximum sustained wind speed assigned by the responsible WMO agency \n WMO_PRES: Minimum central pressure assigned by the responsible WMO agency.",
                     "subnational": "0",
                 }
