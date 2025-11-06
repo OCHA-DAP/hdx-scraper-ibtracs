@@ -47,7 +47,7 @@ cydifflib==1.2.0
     # via
     #   -c requirements.txt
     #   hdx-python-utilities
-defopt==6.4.0
+defopt==7.0.0
     # via
     #   -c requirements.txt
     #   hdx-python-api
@@ -80,15 +80,15 @@ geopandas==1.0.1
     # via
     #   -c requirements.txt
     #   hdx-scraper-ibtracs (pyproject.toml)
-hdx-python-api==6.3.8
+hdx-python-api==6.5.2
     # via
     #   -c requirements.txt
     #   hdx-scraper-ibtracs (pyproject.toml)
-hdx-python-country==3.9.2
+hdx-python-country==3.9.8
     # via
     #   -c requirements.txt
     #   hdx-python-api
-hdx-python-utilities==3.8.6
+hdx-python-utilities==3.9.5
     # via
     #   -c requirements.txt
     #   hdx-scraper-ibtracs (pyproject.toml)

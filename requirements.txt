@@ -27,7 +27,7 @@ click==8.1.8
     # via typer
 cydifflib==1.2.0
     # via hdx-python-utilities
-defopt==6.4.0
+defopt==7.0.0
     # via hdx-python-api
 dnspython==2.7.0
     # via email-validator
@@ -45,11 +45,11 @@ frictionless==5.18.1
     # via hdx-python-utilities
 geopandas==1.0.1
     # via hdx-scraper-ibtracs (pyproject.toml)
-hdx-python-api==6.3.8
+hdx-python-api==6.5.2
     # via hdx-scraper-ibtracs (pyproject.toml)
-hdx-python-country==3.9.2
+hdx-python-country==3.9.8
     # via hdx-python-api
-hdx-python-utilities==3.8.6
+hdx-python-utilities==3.9.5
     # via
     #   hdx-scraper-ibtracs (pyproject.toml)
     #   hdx-python-api
