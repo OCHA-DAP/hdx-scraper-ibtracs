@@ -85,15 +85,15 @@ class Ibtracs:
             else f" that pass within 2000 kilometers of {country_name}"
         )
         resource_name = f"ibtracs_ALL_list_v04r01{file_loc}.csv"
-        dataset.generate_resource_from_rows(
-            headers=list(ibtracs_dict[0].keys()),
-            rows=ibtracs_dict,
+        dataset.generate_resource(
             folder=self._temp_dir,
             filename=resource_name,
+            rows=ibtracs_dict,
             resourcedata={
                 "name": resource_name,
                 "description": f"IBTrACS storm tracks from {start_year} to date{desc_loc}.",
             },
+            headers=list(ibtracs_dict[0].keys()),
             encoding="utf-8",
         )
 
@@ -111,40 +111,7 @@ class Ibtracs:
         resource.set_format("GeoJSON")
         resource.set_file_to_upload(geo_path)
         dataset.add_update_resource(resource)
-        if countryiso3 != "world":
-            resource.enable_dataset_preview()
-            dataset.preview_resource()
 
-        # Subset with HXL tags sid, basin, year, nature
-        if countryiso3 == "world":
-            hxl_tags = [
-                "#id+code",
-                "#region+name",
-                "#region+name+subbasin",
-                "#impact+type",
-                "#date+year+reported",
-            ]
-            qc_df = ibtracs_df.loc[
-                :, ["SID", "BASIN", "SUBBASIN", "ISO_TIME", "NATURE"]
-            ]
-            qc_df["YEAR"] = qc_df["ISO_TIME"].str[:4]
-            qc_df.drop(columns=["ISO_TIME"], inplace=True)
-            qc_df.loc[qc_df.index[0]] = hxl_tags
-            qc_df.drop_duplicates(inplace=True)
-            qc_df_dict = qc_df.apply(lambda x: x.to_dict(), axis=1)
-
-            dataset.generate_resource_from_rows(
-                headers=list(qc_df_dict[0].keys()),
-                rows=qc_df_dict,
-                folder=self._temp_dir,
-                filename="data_for_quickcharts.csv",
-                resourcedata={
-                    "name": "data_for_quickcharts.csv",
-                    "description": f"Simplified quick charts data, without latitude or longitude, "
-                    f"with HXL tags from {start_year} to date.",
-                },
-                encoding="utf-8",
-            )
         return dataset
 
     def get_data(self) -> None:
