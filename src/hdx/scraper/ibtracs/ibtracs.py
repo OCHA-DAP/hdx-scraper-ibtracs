@@ -8,6 +8,7 @@ from typing import List, Optional
 from zipfile import ZipFile
 
 import geopandas
+import numpy
 from bs4 import BeautifulSoup
 from hdx.api.configuration import Configuration
 from hdx.data.dataset import Dataset
@@ -215,6 +216,7 @@ class Ibtracs:
             )
             _, file_path = resource.download(folder)
         lyr = geopandas.read_file(file_path)
+        lyr = lyr.replace({numpy.nan: None})
         lyr = lyr.to_crs(crs="ESRI:54009")
         for i, row in lyr.iterrows():
             if not lyr.geometry[i].is_valid:
