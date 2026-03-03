@@ -1,10 +1,11 @@
 default_language_version:
-    python: python3.12
+    python: python3.13
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v5.0.0
     hooks:
       - id: trailing-whitespace
+        exclude: (ibtracs_ALL_list_v04r01.csv|ibtracs_ALL_list_v04r01_CUB.csv)
       - id: end-of-file-fixer
       - id: check-ast
   - repo: https://github.com/astral-sh/ruff-pre-commit

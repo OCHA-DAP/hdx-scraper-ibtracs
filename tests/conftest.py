@@ -60,10 +60,7 @@ def configuration(config_dir):
         "tags": [
             {"name": tag}
             # Change tags below to match those needed in tests
-            for tag in (
-                "cyclones-hurricanes-typhoons",
-                "hxl",
-            )
+            for tag in ("cyclones-hurricanes-typhoons",)
         ],
         "id": "b891512e-9516-4bf5-962a-7a289772a2a1",
         "name": "approved",

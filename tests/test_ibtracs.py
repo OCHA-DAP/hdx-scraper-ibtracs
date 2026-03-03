@@ -42,13 +42,9 @@ class TestIbtracs:
                             "name": "cyclones-hurricanes-typhoons",
                             "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
                         },
-                        {
-                            "name": "hxl",
-                            "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
-                        },
                     ],
                     "groups": [{"name": "world"}],
-                    "dataset_date": "[1842-10-25T00:00:00 TO 2074-12-01T23:59:59]",
+                    "dataset_date": "[1842-10-25T00:00:00 TO 2075-12-01T23:59:59]",
                     "license_id": "cc-by-igo",
                     "methodology": "Other",
                     "methodology_other": "Please find the methodology at [this link](https://www.ncei.noaa.gov/sites/g/files/anmtlf171/files/2024-07/IBTrACS_version4r01_Technical_Details.pdf)",
@@ -64,7 +60,7 @@ class TestIbtracs:
                 }
 
                 resources = dataset.get_resources()
-                assert len(resources) == 3
+                assert len(resources) == 2
                 assert resources[0] == {
                     "name": "ibtracs_ALL_list_v04r01.csv",
                     "description": "IBTrACS storm tracks from 1842 to date.",
@@ -92,14 +88,9 @@ class TestIbtracs:
                             "name": "cyclones-hurricanes-typhoons",
                             "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
                         },
-                        {
-                            "name": "hxl",
-                            "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
-                        },
                     ],
                     "groups": [{"name": "cub"}],
                     "dataset_date": "[1853-08-03T00:00:00 TO 2051-12-01T23:59:59]",
-                    "dataset_preview": "resource_id",
                     "license_id": "cc-by-igo",
                     "methodology": "Other",
                     "methodology_other": "Please find the methodology at [this link](https://www.ncei.noaa.gov/sites/g/files/anmtlf171/files/2024-07/IBTrACS_version4r01_Technical_Details.pdf)",
